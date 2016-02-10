@@ -102,8 +102,8 @@ namespace ClockApp
                 {{1, - deltaTime},
                 {0, 1 }});
 
-            //Matrix<double> control = DenseMatrix.OfArray(new double[,]
-            //    {{ controlDeltaAngle }, { 0 }});
+            Matrix<double> control = DenseMatrix.OfArray(new double[,]
+                {{ controlDeltaAngle }, { 0 }});
 
 
             // process noise...
@@ -113,7 +113,7 @@ namespace ClockApp
             Matrix<double> r = _r * deltaTime;
 
             // predict...the angle
-            Matrix<double> position_hat = (state_transition * _position) /* control */; // control not needed as the gyro provides this, we don't want to add in this twice
+            Matrix<double> position_hat = (state_transition * _position) + control; 
             Matrix<double> covariance_hat = ((state_transition * _covariance) * state_transition.Transpose()) + q;
 
             // update

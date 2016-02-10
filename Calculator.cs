@@ -35,7 +35,7 @@ namespace ClockApp
             return diff;
         }
 
-        double CalculateArmAngularVelocity(double oscillatorRadiansPerSecond, double deltaTime)
+        double CalculateArmDelta(double oscillatorRadiansPerSecond, double deltaTime)
         {
             double a0 = _pathCalculator.DetermineArmAngleFromOscillarAngle(_oscillatorAngle, _cycle);
             double a1 = _pathCalculator.DetermineArmAngleFromOscillarAngle(_oscillatorAngle + oscillatorRadiansPerSecond * deltaTime, _cycle);
@@ -44,9 +44,9 @@ namespace ClockApp
 
         public double Process(double rawAngle, double rawDeltaAngle, double deltaTime, double radiansPerSecond, out double osc0, out double osc1)
         {
-            double arm_delta_angle = CalculateArmAngularVelocity(radiansPerSecond, deltaTime);
+            double arm_angle_velocity = CalculateArmDelta(radiansPerSecond, deltaTime);
             double delta_arm_angle;
-            double arm_angle = _kalmanFilter.ProcessKalmanSample(rawAngle, rawDeltaAngle, deltaTime, arm_delta_angle, out delta_arm_angle);
+            double arm_angle = _kalmanFilter.ProcessKalmanSample(rawAngle, rawDeltaAngle, deltaTime, arm_angle_velocity, out delta_arm_angle);
 
             _lastArmAngle = arm_angle;
 
