@@ -24,9 +24,9 @@ namespace ClockApp
     {
         const int STATE_SPACE_SIZE = 360;
         const double ACT_SIGMA = 6.4;
-        const int ACT_SIGMA_WIDTH = 31;
+        const int ACT_SIGMA_WIDTH = 45;
         const double SEE_SIGMA = 6.4;
-        const int SEE_SIGMA_WIDTH = 31;
+        const int SEE_SIGMA_WIDTH = 45;
         const double SCALE = 180.0 / Math.PI;
         double[] _oscillatorAngle = new double[STATE_SPACE_SIZE];
         double[] _oscillatorAngleActCycle = new double[STATE_SPACE_SIZE];

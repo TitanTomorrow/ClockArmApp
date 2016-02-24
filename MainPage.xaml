@@ -49,8 +49,8 @@
             <chart:FastLineSeries x:Name="v2" StrokeThickness="4" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="ArmAngle" Interior="Black" />
             <chart:FastLineSeries x:Name="v3" StrokeThickness="4" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="ArmDeltaAngle" Interior="DarkGreen" />
             <chart:FastLineSeries x:Name="v4" StrokeThickness="4" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="OscillatorAngle" Interior="Red" />
+            <chart:FastLineSeries x:Name="v5" StrokeThickness="2" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="ArmAcceleration" Interior="Blue" />
             <!--
-            <chart:FastLineSeries x:Name="v5" StrokeThickness="2" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="Osc0" Interior="Blue" />
             <chart:FastLineSeries x:Name="v6" StrokeThickness="2" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="Osc1" Interior="BlanchedAlmond" />
             -->
         </chart:SfChart>

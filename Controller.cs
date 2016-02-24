@@ -21,7 +21,7 @@ namespace ClockApp
     /// </summary>
     public class AngleData : IEquatable<AngleData>, IComparable<AngleData>
     {
-        public AngleData(double rawArmAngle, double rawDeltaArmAngle, double armAngle, double armDeltaAngle, double oscillatorAngle, double osc0, double osc1, double time)
+        public AngleData(double rawArmAngle, double rawDeltaArmAngle, double armAngle, double armDeltaAngle, double oscillatorAngle, double osc0, double osc1, double armAcceleration, double time)
         {
             if(double.IsNaN(rawArmAngle) == false)
                 RawArmAngle = rawArmAngle;
@@ -37,6 +37,8 @@ namespace ClockApp
                 Osc0 = osc0;
             if (double.IsNaN(osc1) == false)
                 Osc1 = osc1;
+            if(double.IsNaN(armAcceleration) == false)
+                ArmAcceleration = armAcceleration;
             Time = time;
         }
 
@@ -47,6 +49,7 @@ namespace ClockApp
         public double OscillatorAngle { get; private set; }
         public double Osc0 { get; private set; }
         public double Osc1 { get; private set; }
+        public double ArmAcceleration { get; private set; }
         public double Time { get; private set; }
 
         bool IEquatable<AngleData>.Equals(AngleData other)
@@ -96,7 +99,7 @@ namespace ClockApp
 
                         double oscillator_angle = _calculator.Process(raw_angle, raw_delta_angle, e.SamplePeriod, RadiansPerSecond, out osc0, out osc1);
 
-                        Data.Add(new AngleData(raw_angle, raw_delta_angle, _calculator.ArmAngle, _calculator.ArmDeltaAngle, oscillator_angle, osc0, osc1, _time));
+                        Data.Add(new AngleData(raw_angle, raw_delta_angle, _calculator.ArmAngle, _calculator.ArmDeltaAngle, oscillator_angle, osc0, osc1, Math.Log10(Math.Abs(_calculator.ArmAcceleration)), _time));
 
                         if (_calculator.ArmAngle < MinAngle)
                             MinAngle = _calculator.ArmAngle;

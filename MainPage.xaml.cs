@@ -81,7 +81,7 @@ namespace ClockApp
             {
                 if (ad.Time >= old_time)
                 {
-                    data.Add(new AngleData(ad.RawArmAngle * 180/Math.PI, ad.RawArmDeltaAngle * 180 / Math.PI, ad.ArmAngle * 180 / Math.PI, ad.ArmDeltaAngle * 180 / Math.PI, ad.OscillatorAngle * 180 / Math.PI, ad.Osc0 * 180 / Math.PI, ad.Osc1 * 180 / Math.PI, ad.Time));
+                    data.Add(new AngleData(ad.RawArmAngle * 180/Math.PI, ad.RawArmDeltaAngle * 180 / Math.PI, ad.ArmAngle * 180 / Math.PI, ad.ArmDeltaAngle * 180 / Math.PI, ad.OscillatorAngle * 180 / Math.PI, ad.Osc0 * 180 / Math.PI, ad.Osc1 * 180 / Math.PI, ad.ArmAcceleration * 180 / Math.PI, ad.Time));
                 }
             }
 

@@ -138,10 +138,10 @@ namespace ClockApp
                 WriteByte(GYRO_CONFIG, 0); // +/- 250 degrees sec
                 WriteByte(ACCEL_CONFIG, 0); // +/- 2g
 
-                WriteByte(CONFIG, 1); // 184 Hz, 2ms delay
-                WriteByte(SMPLRT_DIV, 19);  // set rate 50Hz
-                //WriteByte(CONFIG, 0); // 260 Hz, 0ms delay
-                //WriteByte(SMPLRT_DIV, 79);  // set rate 100Hz
+                //WriteByte(CONFIG, 1); // 184 Hz, 2ms delay
+                //WriteByte(SMPLRT_DIV, 19);  // set rate 40Hz
+                WriteByte(CONFIG, 0); // 260 Hz, 0ms delay
+                WriteByte(SMPLRT_DIV, 79);  // set rate 100Hz
 
                 WriteByte(FIFO_EN, 0x78); // enable accel and gyro to read into fifo
                 WriteByte(USER_CTRL, 0x40); // reset and enable fifo
@@ -168,7 +168,7 @@ namespace ClockApp
                     {
                         MpuSensorEventArgs ea = new MpuSensorEventArgs();
                         ea.Status = (byte)interrupt_status;
-                        ea.SamplePeriod = 0.02f;
+                        ea.SamplePeriod = 0.01f;
                         List<MpuSensorValue> l = new List<MpuSensorValue>();
 
                         int count = ReadWord(FIFO_COUNT);

@@ -27,9 +27,9 @@ namespace ClockApp
         {
             // set default process and measurement noise 
             _q = DenseMatrix.OfArray(new double[,]
-                { { 0.05, 0 }, { 0, 0.05 } });
-            _r = DenseMatrix.OfArray(new double[,]
                 { { 1, 0 }, { 0, 1 } });
+            _r = DenseMatrix.OfArray(new double[,]
+                { { 3, 0 }, { 0, 1 } });
             Reset();
         }
 
@@ -95,7 +95,7 @@ namespace ClockApp
         /// <param name="controlDeltaAngle"></param>
         /// <param name="deltaAngle"></param>
         /// <returns></returns>
-        public double ProcessKalmanSample(double rawAngle, double rawDeltaAngle, double deltaTime, double controlDeltaAngle, out double deltaAngle)
+        public double ProcessKalmanSample(double rawAngle, double rawDeltaAngle, double deltaTime, double controlAngleAcceleration, out double deltaAngle)
         {
             // transform function
             Matrix<double> state_transition = DenseMatrix.OfArray(new double[,]
@@ -103,14 +103,14 @@ namespace ClockApp
                 {0, 1 }});
 
             Matrix<double> control = DenseMatrix.OfArray(new double[,]
-                {{ controlDeltaAngle }, { 0 }});
-
+                {{ 0.5 * controlAngleAcceleration * deltaTime * deltaTime  }, { controlAngleAcceleration * deltaTime }});
 
             // process noise...
-            Matrix<double> q = _q * deltaTime;
+            double n = Math.Abs(Math.Log10(Math.Abs(controlAngleAcceleration))) / 10;
+            Matrix<double> q = _q * Math.Max(0.001, n);
 
             // measure noise
-            Matrix<double> r = _r * deltaTime;
+            Matrix<double> r = _r;
 
             // predict...the angle
             Matrix<double> position_hat = (state_transition * _position) + control; 
@@ -120,19 +120,17 @@ namespace ClockApp
             Matrix<double> z = DenseMatrix.OfArray(new double[,]
                 { { rawAngle }, { rawDeltaAngle } });
             // state to observation mapping (the observation is the same as the state)
-            Matrix<double> H = DenseMatrix.OfArray(new double[,]
-                { { 1, 0 }, { 0, 1 } });
 
             Matrix<double> I = DenseMatrix.CreateIdentity(2);
 
             // update, calculate the innovations
-            Matrix<double> position_innovation = z - (H * position_hat);
-            Matrix<double> covariance_innovation = (((H * covariance_hat) * H.Transpose()) + r);
+            Matrix<double> position_innovation = z - position_hat;
+            Matrix<double> covariance_innovation = (covariance_hat + r);
 
-            Matrix<double> kalman_gain = (covariance_hat * H.Transpose()) * covariance_innovation.Inverse();
+            Matrix<double> kalman_gain = covariance_hat * covariance_innovation.Inverse();
 
             Matrix<double> position = (position_hat + (kalman_gain * position_innovation));
-            Matrix<double> covariance = ((I - (kalman_gain * H)) * covariance_hat);
+            Matrix<double> covariance = (I - kalman_gain) * covariance_hat;
 
             position.CopyTo(_position);
             covariance.CopyTo(_covariance);

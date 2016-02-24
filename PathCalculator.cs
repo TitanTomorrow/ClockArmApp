@@ -36,7 +36,12 @@ namespace ClockApp
             CreateLookup();
         }
 
-        public double DetermineArmAngleFromOscillarAngle(double angle, bool useOther)
+        public double DetermineArmAngleFromOscillarAngle(double angle)
+        {
+            return DetermineArmAngleFromOscillarAngle(angle, true);
+        }
+
+        double DetermineArmAngleFromOscillarAngle(double angle, bool useOther)
         {
             // contact points are (x - _distanceBetweenPivots)^2 + y^2 = _oscillatorLength
 
@@ -78,7 +83,7 @@ namespace ClockApp
         }
 
         // create lookup table
-        const int LOOKUP_LENGTH = 1024;
+        const int LOOKUP_LENGTH = 1024 * 16;
         readonly Tuple<double, double>[] _farLookUp = new Tuple<double, double>[LOOKUP_LENGTH];
         readonly Tuple<double, double>[] _closeLookUp = new Tuple<double, double>[LOOKUP_LENGTH];
         double _maxAngle = double.MinValue;
