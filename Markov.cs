@@ -22,12 +22,12 @@ namespace ClockApp
     /// </summary>
     public class Markov
     {
-        const int STATE_SPACE_SIZE = 360;
+        const int STATE_SPACE_MULTIPLIER = 1;
+        const int STATE_SPACE_SIZE = 360 * STATE_SPACE_MULTIPLIER;
         const double ACT_SIGMA = 6.4;
         const int ACT_SIGMA_WIDTH = 45;
         const double SEE_SIGMA = 6.4;
         const int SEE_SIGMA_WIDTH = 45;
-        const double SCALE = 180.0 / Math.PI;
         double[] _oscillatorAngle = new double[STATE_SPACE_SIZE];
         double[] _oscillatorAngleActCycle = new double[STATE_SPACE_SIZE];
         int _lastPeak = 0;
@@ -52,11 +52,12 @@ namespace ClockApp
         static double[] CreateGaussianFilter(double sigma, int width)
         {
             double[] filter = new double[width];
-            double m = width / 2.0;
-            double factor = 1 / (2.0 * Math.PI * sigma * sigma);
+            double m = (double)(width / 2);
+            double factor = 1.0 / (2.0 * Math.PI * sigma * sigma);
             for (int i = 0; i < width; i++)
             {
-                double val = (double)((i - m) * (i - m));
+                double di = (double)i;
+                double val = (di - m) * (di - m);
                 double v = Math.Exp(-val / (2.0 * sigma * sigma)) * factor;
                 filter[i] = v;
             }
@@ -65,13 +66,20 @@ namespace ClockApp
 
         double ConvertToStateSpace(double angle)
         {
-            return angle * SCALE;
+            if (angle < 0)
+                angle += (double)((1 - ((int)angle / 360)) * 360);
+            angle *= STATE_SPACE_MULTIPLIER;
+            return angle;
         }
 
         double ConvertFromStateSpace(double angle)
         {
-            return angle / SCALE;
+            angle /= STATE_SPACE_MULTIPLIER;
+            if (angle > 180)
+                angle -= 360;
+            return angle;
         }
+
 
         int ToIndex(double angle, out double weightLow, out double weightHigh)
         {
@@ -89,15 +97,17 @@ namespace ClockApp
         }
 
 
-        public double GetOscillatorAngle(double controlAngleChange, double measuredOscillatorAngle0, double measuredOscillatorAngle1)
+        public double GetOscillatorAngle(double controlAngleChange, double measuredOscillatorAngle0, double measuredOscillatorAngle1, double reference)
         {
-            double cac = ConvertToStateSpace(controlAngleChange);
+            double cac = controlAngleChange * STATE_SPACE_MULTIPLIER;
             double moa0 = ConvertToStateSpace(measuredOscillatorAngle0);
             double moa1 = ConvertToStateSpace(measuredOscillatorAngle1);
+            double refs = ConvertToStateSpace(reference);
 
             double a = GetOscillatorAngleStateSpace(cac, moa0, moa1);
+            double aa = ConvertFromStateSpace(a);
 
-            return ConvertFromStateSpace(a);
+            return aa;
         }
 
         public static int GetAngleDiff(int a, int b)
@@ -126,16 +136,18 @@ namespace ClockApp
             for (int i = 0; i < STATE_SPACE_SIZE; i++)
             {
                 double p = 0;
+                int hij = ACT_SIGMA_WIDTH / 2;
                 for (int ij = 0; ij < ACT_SIGMA_WIDTH; ij++)
                 {
-                    //if (ij >= (ACT_SIGMA_WIDTH / 2))
+                    int j_low = SanatiseIndex((ij - hij) + i - offset_low);
+                    int j_high = SanatiseIndex(j_low + 1);
+                    int diff = GetAngleDiff(j_low, i);
+                    // this should be a rayleigh distribution, but this is "good enough" I guess
+                    // we know the angle can only go in the direction of the control angle change
+                    if (((diff <= 0) && (controlAngleChange >= 0)) || ((diff >= 0) && (controlAngleChange <= 0)))
                     {
-                        int j_low = SanatiseIndex((ij - ACT_SIGMA_WIDTH / 2) + i - offset_low);
-                        int j_high = SanatiseIndex(j_low + 1);
-                        if (GetAngleDiff(j_low, i) >= 0)
-                        {
-                            p += _actDistribution[ij] * (_oscillatorAngle[j_low] * weight_low + _oscillatorAngle[j_high] * weight_high);
-                        }
+
+                        p += _actDistribution[ij] * (_oscillatorAngle[j_low] * weight_low + _oscillatorAngle[j_high] * weight_high);
                     }
                 }
                 _oscillatorAngleActCycle[i] = p;
@@ -156,7 +168,7 @@ namespace ClockApp
 
                 for (int ij = 0; ij < SEE_SIGMA_WIDTH; ij++)
                 {
-                    int j_low = SanatiseIndex((ij - SEE_SIGMA_WIDTH / 2) - offset_low);
+                    int j_low = SanatiseIndex(offset_low + (ij - SEE_SIGMA_WIDTH / 2));
                     int j_high = SanatiseIndex(j_low);
                     double l = _seeDistribution[ij] * _oscillatorAngleActCycle[j_low] * weight_low;
                     double h = _seeDistribution[ij] * _oscillatorAngleActCycle[j_high] * weight_high;

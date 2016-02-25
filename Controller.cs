@@ -81,7 +81,7 @@ namespace ClockApp
             _mpu6050.SensorInterruptEvent += _mpu6050_SensorInterruptEvent;
             MaxAngle = double.MinValue;
             MinAngle = double.MaxValue;
-            RadiansPerSecond = 1;
+            RadiansPerSecond = -Math.PI * 2 / 2.2;
         }
 
         private void _mpu6050_SensorInterruptEvent(object sender, MpuSensorEventArgs e)

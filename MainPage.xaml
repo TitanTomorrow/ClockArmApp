@@ -24,10 +24,10 @@
             <TextBox VerticalAlignment="Center" x:Name="textBoxMinAngle" HorizontalAlignment="Left" Margin="6" Width="auto"/>
             <TextBlock VerticalAlignment="Center">Max Angle</TextBlock>
             <TextBox VerticalAlignment="Center" x:Name="textBoxMaxAngle" HorizontalAlignment="Left" Margin="6" Width="auto"/>
-            <TextBlock VerticalAlignment="Center">Power Level</TextBlock>
-            <TextBox VerticalAlignment="Center" x:Name="textBoxPowerLevel" HorizontalAlignment="Left" Margin="6" Width="auto"/>
-            <Button Margin="6" VerticalAlignment="Center" x:Name="buttonLowerPower" Content="Lower Speed" Click="buttonLowerPower_Click"/>
-            <Button Margin="6" VerticalAlignment="Center" x:Name="buttonRaisePower" Content="Increase Speed" Click="buttonRaisePower_Click"/>
+            <TextBlock VerticalAlignment="Center">Radians Per Second</TextBlock>
+            <TextBox VerticalAlignment="Center" x:Name="textBoxRadiansPerSecond" HorizontalAlignment="Left" Margin="6" Width="auto" Text="2" TextChanged="textBoxRadiansPerSecond_TextChanged"/>
+            <Button VerticalAlignment="Center" x:Name="buttonNegativeRadiansPerSecond" Content="negative radians per second" Click="buttonNegativeRadiansPerSecond_Click"/>
+            <Button VerticalAlignment="Center" x:Name="buttonPositiveRadiansPerSecond" Content="positive radians per second" Click="buttonPositiveRadiansPerSecond_Click"/>
         </StackPanel>
         <chart:SfChart Grid.Row="1" x:Name="sensorChart" Margin="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <chart:SfChart.PrimaryAxis>
@@ -49,10 +49,8 @@
             <chart:FastLineSeries x:Name="v2" StrokeThickness="4" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="ArmAngle" Interior="Black" />
             <chart:FastLineSeries x:Name="v3" StrokeThickness="4" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="ArmDeltaAngle" Interior="DarkGreen" />
             <chart:FastLineSeries x:Name="v4" StrokeThickness="4" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="OscillatorAngle" Interior="Red" />
-            <chart:FastLineSeries x:Name="v5" StrokeThickness="2" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="ArmAcceleration" Interior="Blue" />
-            <!--
+            <chart:FastLineSeries x:Name="v5" StrokeThickness="2" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="Osc0" Interior="Blue" />
             <chart:FastLineSeries x:Name="v6" StrokeThickness="2" ItemsSource="{Binding}" XBindingPath="Time" YBindingPath="Osc1" Interior="BlanchedAlmond" />
-            -->
         </chart:SfChart>
     </Grid>
 </Page>

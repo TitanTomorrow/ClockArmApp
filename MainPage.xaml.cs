@@ -87,24 +87,29 @@ namespace ClockApp
 
             textBoxMaxAngle.Text = _controller.MaxAngle.ToString("0.00");
             textBoxMinAngle.Text = _controller.MinAngle.ToString("0.00");
-            textBoxPowerLevel.Text = _controller.PowerLevel.ToString("0.00");
+            textBoxRadiansPerSecond.Text = _controller.RadiansPerSecond.ToString("0.00");
         }
 
-        private void buttonLowerPower_Click(object sender, RoutedEventArgs e)
+        private void buttonNegativeRadiansPerSecond_Click(object sender, RoutedEventArgs e)
         {
-            double pl = _controller.PowerLevel;
-            pl -= 0.5;
-            pl = Math.Max(-1.0, pl);
-            _controller.PowerLevel = pl;
+            _controller.RadiansPerSecond = -Math.Abs(_controller.RadiansPerSecond);
+            textBoxRadiansPerSecond.Text = _controller.RadiansPerSecond.ToString("0.00");
         }
 
-        private void buttonRaisePower_Click(object sender, RoutedEventArgs e)
+        private void buttonPositiveRadiansPerSecond_Click(object sender, RoutedEventArgs e)
         {
-            double pl = _controller.PowerLevel;
-            pl += 0.5;
-            pl = Math.Min(1.0, pl);
-            _controller.PowerLevel = pl;
+            _controller.RadiansPerSecond = Math.Abs(_controller.RadiansPerSecond);
+            textBoxRadiansPerSecond.Text = _controller.RadiansPerSecond.ToString("0.00");
         }
 
+        private void textBoxRadiansPerSecond_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            double res;
+            if(double.TryParse(textBoxRadiansPerSecond.Text, out res))
+            {
+                _controller.RadiansPerSecond = res;
+            }
+            textBoxRadiansPerSecond.Text = _controller.RadiansPerSecond.ToString("0.00");
+        }
     }
 }

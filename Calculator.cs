@@ -48,10 +48,20 @@ namespace ClockApp
             return deltaDelta;
         }
 
+        double ToDegrees(double rad)
+        {
+            return 180.0 * rad / Math.PI;
+        }
+
+
+        double ToRad(double deg)
+        {
+            return Math.PI * deg / 180.0;
+        }
 
         public double Process(double rawAngle, double rawDeltaAngle, double deltaTime, double radiansPerSecond, out double osc0, out double osc1)
         {
-            double arm_acceleration = CalculateArmAcceleration(Math.PI*2/2.2, _oscillatorAngle);
+            double arm_acceleration = CalculateArmAcceleration(radiansPerSecond, _oscillatorAngle);
             _armAcceleration = arm_acceleration;
             double delta_arm_angle;
             double arm_angle = _kalmanFilter.ProcessKalmanSample(rawAngle, rawDeltaAngle, deltaTime, arm_acceleration, out delta_arm_angle);
@@ -61,7 +71,8 @@ namespace ClockApp
             osc0 = _pathCalculator.GetOscillarAngle(arm_angle, true);
             osc1 = _pathCalculator.GetOscillarAngle(arm_angle, false);
 
-            _oscillatorAngle = _markov.GetOscillatorAngle(radiansPerSecond * deltaTime, osc0, osc1);
+            double adeg = _markov.GetOscillatorAngle(ToDegrees(radiansPerSecond * deltaTime), ToDegrees(osc0), ToDegrees(osc1), ToDegrees(_oscillatorAngle));
+            _oscillatorAngle = ToRad(adeg);
 
             return _oscillatorAngle;
         }
